@@ -9,6 +9,26 @@ Author URI:  http://causingdesignscom.kinsta.cloud/
 */
 
 
+
+// Call js scripts
+wp_register_script( 'ajax_logging', plugin_dir_url(__FILE__).'js/ajax_logging.js', array('jquery') );
+wp_enqueue_script( 'ajax_logging' );
+
+
+
+function ajax_log_scripts() {
+	wp_enqueue_style( 'style', get_stylesheet_uri() );
+	wp_enqueue_style( 'ajax_log_css',  plugin_dir_url(__FILE__) . 'css/ajax_logging.css', array(), '1.1', 'all');
+   
+//	wp_enqueue_script( 'script', get_template_directory_uri() . '/js/script.js', array ( 'jquery' ), 1.1, true);
+   
+
+}
+add_action( 'admin_enqueue_scripts', 'ajax_log_scripts' );
+
+
+
+
 add_action( 'init', 'ajax_logging' );
 
 function ajax_logging($switch) {
@@ -18,19 +38,11 @@ function ajax_logging($switch) {
   $current_data = file_get_contents($ajax_log_file_json);
  
  // Check if ajax is there. 
-   if ( wp_doing_ajax() )
+   if ( wp_doing_ajax() ){
    
-   {
-     
-     ?>
-
-     <?php
- 
-     // Check which action is using that ajax..
+    // Check which action is using that ajax..
      $ajax_action = $_REQUEST['action'];
-   //	echo "It is calling this action: <br>" . $ajax_action . "<br>";
- 
- 
+
      // Is this called in admin?
      $is_ajax_in_admin =  is_admin();
  
@@ -89,73 +101,7 @@ function ajax_log_admin_page() {
  $html_output = '
    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script
    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
- 
-   <style>
 
- .switch_container {
-   padding: 15px;
- }
- 
-   .switch {
-     position: relative;
-     display: inline-block;
-     width: 60px;
-     height: 34px;
-   }
-   
-   .switch input { 
-     opacity: 0;
-     width: 0;
-     height: 0;
-   }
-   
-   .slider {
-     position: absolute;
-     cursor: pointer;
-     top: 0;
-     left: 0;
-     right: 0;
-     bottom: 0;
-     background-color: #ccc;
-     -webkit-transition: .4s;
-     transition: .4s;
-   }
-   
-   .slider:before {
-     position: absolute;
-     content: "";
-     height: 26px;
-     width: 26px;
-     left: 4px;
-     bottom: 4px;
-     background-color: white;
-     -webkit-transition: .4s;
-     transition: .4s;
-   }
-   
-   input:checked + .slider {
-     background-color: #2196F3;
-   }
-   
-   input:focus + .slider {
-     box-shadow: 0 0 1px #2196F3;
-   }
-   
-   input:checked + .slider:before {
-     -webkit-transform: translateX(26px);
-     -ms-transform: translateX(26px);
-     transform: translateX(26px);
-   }
-   
-   /* Rounded sliders */
-   .slider.round {
-     border-radius: 34px;
-   }
-   
-   .slider.round:before {
-     border-radius: 50%;
-   }
-   </style>
    </head>
    <body>
    
@@ -168,215 +114,14 @@ function ajax_log_admin_page() {
    </div>
  
  
- 
- <!-- Hour and minutes interval
- #### START
- #### 
- -->
- 
- 
-   <script>
-   jQuery(document).ready(function ($) {
 
-
-    
-    console.log("xx' . $ajax_log_file . '");  
- 
- 
-   jQuery("input.ajax_switch").change(function() { 
-     
-     var ajax_switch_on = jQuery("input.ajax_switch").is(":checked"); 
- 
-     if  (ajax_switch_on == true) { 
-
-          data = {
-            "action": "echo_me",
-            "ajax_switch": "ajax_is_on"
-          };
-
-          $.ajax({ 
-            url : "http://localhost:3000/wp-admin/admin-ajax.php",
-            data : data,
-            type : "POST",
-
-            success : function( data ){
-                console.log(data);
-            }
-
-          });
-
-     }
-     else {
-        data = {
-          "action": "echo_me",
-          "ajax_switch": "ajax_is_off"
-        };
-
-        $.ajax({ 
-          url : "http://localhost:3000/wp-admin/admin-ajax.php",
-          data : data,
-          type : "POST",
-
-          success : function( data ){
-              console.log(data);
-          }
-
-        });
-     }
-   
-   });
- 
- 
- 
- 
- 
- // get calculate yesterday as a date
- var start = new Date();
- start.setHours(0,0,0,0);
- 
- 
-     var chart = new CanvasJS.Chart("chartContainer-hourly",{
-         title:{
-         text:"Ajax action logs - 24 hours"
-         },
-         axisX: {
-           valueFormatString: "HH:mm",
-         //  interval: 2,
-           intervalType: "hour",
-           minimum:  start.setHours(0,0,0,0)
- 
-         },
-         toolTip:  {
-             shared: true
-         },
-         data: []
-     });
-     $.getJSON("/wp-content/uploads/ajax-log.json", function(data) {
- 
-         chart.options.data = [];
-         var occurrences = data.reduce( (acc, obj) => {
-           //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
- 
-             date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
- 
- 
-           //  date = obj.timestamp;
- 
-           //  console.log(obj.timestamp);
- 
-         acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
-         acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
-         return acc;
-         }, {} )
-         for(var actions in occurrences) {
-             var dataPoints = [];
-             for(var key in occurrences[actions]) {
-             dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
-         }
-         chart.options.data.push({
-             type: "splineArea",
-             showInLegend: true,
-             name: actions,
-             xValueType: "dateTime",
-             xValueFormatString: "HH mm",
-             dataPoints: dataPoints
-         });
-         }
-         
-         chart.render(); 
-     });
-     
- });
- 
- </script>
- 
- 
- <!-- Hour and minutes interval
- #### END
- #### 
- -->
- 
- 
- 
- 
- 
- <!-- Hour and minutes interval
- #### START
- #### 
- -->
- 
- 
-   <script>
-   jQuery(document).ready(function ($) {
-
- 
-     var chart = new CanvasJS.Chart("chartContainer-daily",{
-         title:{
-         text:"Ajax action logs - Daily"
-         },
-         axisX: {
-           valueFormatString: "DD MMM",
-           interval: 1,
-           intervalType: "day"
-     
-         },
-         toolTip:  {
-             shared: true
-         },
-         data: []
-     });
-     $.getJSON("/wp-content/uploads/ajax-log.json", function(data) {
-
- 
-         chart.options.data = [];
-         var occurrences = data.reduce( (acc, obj) => {
-           //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
- 
-             date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
- 
- 
-           //  date = obj.timestamp;
- 
-          //   console.log(obj.timestamp);
- 
-         acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
-         acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
-         return acc;
-         }, {} )
-         for(var actions in occurrences) {
-             var dataPoints = [];
-             for(var key in occurrences[actions]) {
-             dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
-         }
-         chart.options.data.push({
-             type: "line",
-             showInLegend: true,
-             name: actions,
-             xValueType: "dateTime",
-             xValueFormatString: "DD MMM YYYY",
-             dataPoints: dataPoints
-         });
-         }
-         
-         chart.render(); 
-     });
-     
- });
- 
- </script>
- 
- 
- <!-- Hour and minutes interval
- #### END
- #### 
- -->
- 
  
  </head>
  <body>
  <div id="chartContainer-hourly" style="height: 300px; width: 100%;"> Hourly Ajax Logs </div>
  <div id="chartContainer-daily" style="height: 300px; width: 100%;"> Daily Ajax Logs </div>
-';
+
+ ';
      echo $html_output;
 }
 
