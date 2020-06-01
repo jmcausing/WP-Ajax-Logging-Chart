@@ -65,56 +65,64 @@ jQuery(document).ready(function ($) {
  start.setHours(0,0,0,0);
  
  
-     var chart = new CanvasJS.Chart("chartContainer-hourly",{
-         title:{
-         text:"Ajax action logs - 24 hours"
-         },
-         axisX: {
-           valueFormatString: "HH:mm",
-         //  interval: 2,
-           intervalType: "hour",
-           minimum:  start.setHours(0,0,0,0)
- 
-         },
-         toolTip:  {
-             shared: true
-         },
-         data: []
-     });
-     $.getJSON("/wp-content/uploads/ajax-log.json", function(data) {
- 
-         chart.options.data = [];
-         var occurrences = data.reduce( (acc, obj) => {
-           //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
- 
-             date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
- 
- 
-           //  date = obj.timestamp;
- 
-           //  console.log(obj.timestamp);
- 
-         acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
-         acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
-         return acc;
-         }, {} )
-         for(var actions in occurrences) {
-             var dataPoints = [];
-             for(var key in occurrences[actions]) {
-             dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
-         }
-         chart.options.data.push({
-             type: "splineArea",
-             showInLegend: true,
-             name: actions,
-             xValueType: "dateTime",
-             xValueFormatString: "HH mm",
-             dataPoints: dataPoints
-         });
-         }
-         
-         chart.render(); 
-     });
+
+ if (jQuery('#chartContainer-hourly').length == 1)  {
+
+    var chart = new CanvasJS.Chart("chartContainer-hourly",{
+        title:{
+        text:"Ajax action logs - 24 hours"
+        },
+        axisX: {
+          valueFormatString: "HH:mm",
+        //  interval: 2,
+          intervalType: "hour",
+          minimum:  start.setHours(0,0,0,0)
+
+        },
+        toolTip:  {
+            shared: true
+        },
+        data: []
+    });
+    $.getJSON("/wp-content/uploads/ajax-log.json", function(data) {
+
+        chart.options.data = [];
+        var occurrences = data.reduce( (acc, obj) => {
+          //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
+
+            date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
+
+
+          //  date = obj.timestamp;
+
+          //  console.log(obj.timestamp);
+
+        acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
+        acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
+        return acc;
+        }, {} )
+        for(var actions in occurrences) {
+            var dataPoints = [];
+            for(var key in occurrences[actions]) {
+            dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
+        }
+        chart.options.data.push({
+            type: "splineArea",
+            showInLegend: true,
+            name: actions,
+            xValueType: "dateTime",
+            xValueFormatString: "HH mm",
+            dataPoints: dataPoints
+        });
+        }
+        
+        chart.render(); 
+    });
+
+
+
+ }
+     
  });
 // 24 hours Ajax Logging Chart -- End
 // #####
@@ -128,57 +136,63 @@ jQuery(document).ready(function ($) {
 
 jQuery(document).ready(function ($) {
 
-     var chart = new CanvasJS.Chart("chartContainer-daily",{
-         title:{
-         text:"Ajax action logs - Daily"
-         },
-         axisX: {
-           valueFormatString: "DD MMM",
-           interval: 1,
-           intervalType: "day"
-     
-         },
-         toolTip:  {
-             shared: true
-         },
-         data: []
-     });
-     $.getJSON("/wp-content/uploads/ajax-log.json", function(data) {
 
- 
-         chart.options.data = [];
-         var occurrences = data.reduce( (acc, obj) => {
-           //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
- 
-             date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
- 
- 
-           //  date = obj.timestamp;
- 
-          //   console.log(obj.timestamp);
- 
-         acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
-         acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
-         return acc;
-         }, {} )
-         for(var actions in occurrences) {
-             var dataPoints = [];
-             for(var key in occurrences[actions]) {
-             dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
-         }
-         chart.options.data.push({
-             type: "splineArea",
-             showInLegend: true,
-             name: actions,
-             xValueType: "dateTime",
-             xValueFormatString: "DD MMM YYYY",
-             dataPoints: dataPoints
-         });
-         }
-         
-         chart.render(); 
-     });
+    
+ if (jQuery('#chartContainer-daily').length == 1)  {
+
+        var chart = new CanvasJS.Chart("chartContainer-daily",{
+            title:{
+            text:"Ajax action logs - Daily"
+            },
+            axisX: {
+            valueFormatString: "DD MMM",
+            interval: 1,
+            intervalType: "day"
+        
+            },
+            toolTip:  {
+                shared: true
+            },
+            data: []
+        });
+        $.getJSON("/wp-content/uploads/ajax-log.json", function(data) {
+
+    
+            chart.options.data = [];
+            var occurrences = data.reduce( (acc, obj) => {
+            //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
+    
+                date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
+    
+    
+            //  date = obj.timestamp;
+    
+            //   console.log(obj.timestamp);
+    
+            acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
+            acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
+            return acc;
+            }, {} )
+            for(var actions in occurrences) {
+                var dataPoints = [];
+                for(var key in occurrences[actions]) {
+                dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
+            }
+            chart.options.data.push({
+                type: "splineArea",
+                showInLegend: true,
+                name: actions,
+                xValueType: "dateTime",
+                xValueFormatString: "DD MMM YYYY",
+                dataPoints: dataPoints
+            });
+            }
+            
+            chart.render(); 
+        });
+    }
      
+
  });
 
 // Daily Ajax Logging Chart -- End
