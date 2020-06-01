@@ -1,8 +1,13 @@
 jQuery(document).ready(function ($) {
 
-
-    
-    console.log("xx' . $ajax_log_file . '");  
+    // check ajax status from get post meta
+    console.log(ajax_logging_status.ajax_status);  
+    if (ajax_logging_status.ajax_status == 'off') {
+        jQuery('input.ajax_switch').prop("checked", false);
+    }
+    else {
+        jQuery('input.ajax_switch').prop("checked", true);
+    }
  
  
     jQuery("input.ajax_switch").change(function() { 
@@ -22,7 +27,7 @@ jQuery(document).ready(function ($) {
                 type : "POST",
 
                 success : function( data ){
-                    console.log(data);
+                   console.log(data);
                 }
 
             });
@@ -40,7 +45,7 @@ jQuery(document).ready(function ($) {
             type : "POST",
 
             success : function( data ){
-                console.log(data);
+               console.log(data);
             }
 
             });
@@ -162,7 +167,7 @@ jQuery(document).ready(function ($) {
              dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
          }
          chart.options.data.push({
-             type: "line",
+             type: "splineArea",
              showInLegend: true,
              name: actions,
              xValueType: "dateTime",

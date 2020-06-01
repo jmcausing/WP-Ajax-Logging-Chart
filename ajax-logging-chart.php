@@ -10,6 +10,16 @@ Author URI:  http://causingdesignscom.kinsta.cloud/
 
 
 
+function myplugin_activate() {
+
+  update_post_meta( 99999, 'ajax_switch', 'on' );
+
+
+}
+register_activation_hook( __FILE__, 'myplugin_activate' );
+
+
+
 // Call js scripts
 wp_register_script( 'ajax_logging', plugin_dir_url(__FILE__).'js/ajax_logging.js', array('jquery') );
 wp_enqueue_script( 'ajax_logging' );
@@ -31,7 +41,35 @@ add_action( 'admin_enqueue_scripts', 'ajax_log_scripts' );
 
 add_action( 'init', 'ajax_logging' );
 
+
 function ajax_logging($switch) {
+
+
+  $ajax_status = get_post_meta( 99999, 'ajax_switch', 'on' );
+
+  wp_localize_script( 'ajax_logging', 'ajax_logging_status', array(
+    'ajax_status' => $ajax_status
+  ) );
+
+  if ($ajax_status  == 'off') { return; }
+
+
+
+
+
+
+  wp_localize_script( 'my_loadmore', 'misha_loadmore_params', array(
+    'ajaxurl' => site_url() . '/wp-admin/admin-ajax.php', // WordPress AJAX
+    'current_page' => get_query_var( 'paged' ) ? get_query_var('paged') : 1,
+    'max_page' => $max_num_pages,
+    'column_layout' => $set_column,
+    'number_of_post' => $blg_post_number
+
+  ) );
+  wp_enqueue_script( 'my_loadmore' );
+
+
+
 
   $ajax_log_file_json = WP_CONTENT_DIR . "/uploads/ajax-log.json";
 
@@ -128,13 +166,20 @@ function ajax_log_admin_page() {
 
 /// This is your ajax handler called by your jquery file
 function my_ajax_handler22() {
+
   // Retrieve data from ajax
   if( isset( $_POST[ "ajax_switch" ] ) ) {
     
       $ajax_status = $_POST[ "ajax_switch" ];
-      echo $ajax_status;
 
-     // ajax_logging($ajax_status);
+      ajax_logging($ajax_status);
+
+      if ($ajax_status == 'ajax_is_off') {
+        update_post_meta( 99999, 'ajax_switch', 'off' );
+      }
+      else {
+        update_post_meta( 99999, 'ajax_switch', 'on' );
+      }
     
       die;
     
