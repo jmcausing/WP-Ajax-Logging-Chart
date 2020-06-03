@@ -76,7 +76,7 @@ jQuery(document).ready(function ($) {
 
         valueFormatString: "HH:mm",
 
-        intervalType: "hour",
+     //   intervalType: "hour",
 
         minimum:  start.setHours(0,0,0,0),
 

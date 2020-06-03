@@ -107,7 +107,7 @@ function ajax_logging($switch) {
 
 function myplugin_register_options_page() {
  
-  add_menu_page('Ajax Loggin Chart', 'Ajax Logs', 'manage_options', 'theme-options', 'ajax_log_admin_page');
+  add_menu_page('Ajax Logging Chart', 'Ajax Logs', 'manage_options', 'theme-options', 'ajax_log_admin_page');
 
 }
 
@@ -118,7 +118,7 @@ function ajax_log_admin_page() {
  
 
  $html_output = '
-   <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script
+   <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 
    </head>
