@@ -36,9 +36,6 @@ function ajax_log_scripts() {
 }
 add_action( 'admin_enqueue_scripts', 'ajax_log_scripts' );
 
-
-
-
 add_action( 'init', 'ajax_logging' );
 
 
@@ -52,22 +49,6 @@ function ajax_logging($switch) {
   ) );
 
   if ($ajax_status  == 'off') { return; }
-
-
-
-
-
-
-  wp_localize_script( 'my_loadmore', 'misha_loadmore_params', array(
-    'ajaxurl' => site_url() . '/wp-admin/admin-ajax.php', // WordPress AJAX
-    'current_page' => get_query_var( 'paged' ) ? get_query_var('paged') : 1,
-    'max_page' => $max_num_pages,
-    'column_layout' => $set_column,
-    'number_of_post' => $blg_post_number
-
-  ) );
-  wp_enqueue_script( 'my_loadmore' );
-
 
 
 

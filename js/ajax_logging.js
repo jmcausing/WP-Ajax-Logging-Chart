@@ -73,12 +73,17 @@ jQuery(document).ready(function ($) {
         text:"Ajax action logs - 24 hours"
         },
         axisX: {
-          valueFormatString: "HH:mm",
-        //  interval: 2,
-          intervalType: "hour",
-          minimum:  start.setHours(0,0,0,0)
+
+        valueFormatString: "HH:mm",
+
+        intervalType: "hour",
+
+        minimum:  start.setHours(0,0,0,0),
 
         },
+
+
+
         toolTip:  {
             shared: true
         },
@@ -104,10 +109,20 @@ jQuery(document).ready(function ($) {
         for(var actions in occurrences) {
             var dataPoints = [];
             for(var key in occurrences[actions]) {
-            dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
+
+                // check if timestamp is today
+                var inputDate = new Date(parseInt(key));
+                var todaysDate = new Date();
+
+                if (inputDate.setHours(0,0,0,0) == todaysDate.setHours(0,0,0,0)) {
+                    console.log("TODAY IS TODAY");
+                    dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
+
+                }
+
         }
         chart.options.data.push({
-            type: "splineArea",
+            type: "line",
             showInLegend: true,
             name: actions,
             xValueType: "dateTime",
@@ -179,7 +194,7 @@ jQuery(document).ready(function ($) {
                 dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
             }
             chart.options.data.push({
-                type: "splineArea",
+                type: "line",
                 showInLegend: true,
                 name: actions,
                 xValueType: "dateTime",
