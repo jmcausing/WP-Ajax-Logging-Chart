@@ -9,12 +9,9 @@ Author URI:  http://causingdesignscom.kinsta.cloud/
 */
 
 
-
+// Add switch value when plugin is activated
 function myplugin_activate() {
-
   update_post_meta( 99999, 'ajax_switch', 'on' );
-
-
 }
 register_activation_hook( __FILE__, 'myplugin_activate' );
 
@@ -25,20 +22,16 @@ wp_register_script( 'ajax_logging', plugin_dir_url(__FILE__).'js/ajax_logging.js
 wp_enqueue_script( 'ajax_logging' );
 
 
-
-function ajax_log_scripts() {
-	wp_enqueue_style( 'style', get_stylesheet_uri() );
-	wp_enqueue_style( 'ajax_log_css',  plugin_dir_url(__FILE__) . 'css/ajax_logging.css', array(), '1.1', 'all');
-   
-//	wp_enqueue_script( 'script', get_template_directory_uri() . '/js/script.js', array ( 'jquery' ), 1.1, true);
-   
-
+function wpdocs_enqueue_custom_admin_style() {
+  wp_register_style( 'custom_wp_admin_css', plugin_dir_url( __FILE__ ) . 'css/ajax_logging.css', false, '1.0.0' );
+  wp_enqueue_style( 'custom_wp_admin_css' );
 }
-add_action( 'admin_enqueue_scripts', 'ajax_log_scripts' );
+
+add_action( 'admin_enqueue_scripts', 'wpdocs_enqueue_custom_admin_style' ); 
+
+
 
 add_action( 'init', 'ajax_logging' );
-
-
 function ajax_logging($switch) {
 
 
@@ -58,6 +51,8 @@ function ajax_logging($switch) {
  
  // Check if ajax is there. 
    if ( wp_doing_ajax() ){
+
+//    var_dump($_REQUEST);
    
     // Check which action is using that ajax..
      $ajax_action = $_REQUEST['action'];
@@ -132,13 +127,10 @@ function ajax_log_admin_page() {
    </label>
    </div>
  
- 
-
- 
  </head>
  <body>
- <div id="chartContainer-hourly" style="height: 300px; width: 100%;"> Hourly Ajax Logs </div>
- <div id="chartContainer-daily" style="height: 300px; width: 100%;"> Daily Ajax Logs </div>
+ <div class="canvaschart" id="chartContainer-hourly" style="height: 300px; width: 100%;"> Hourly Ajax Logs </div>
+ <div class="canvaschart" id="chartContainer-daily" style="height: 300px; width: 100%;"> Daily Ajax Logs </div>
 
  ';
      echo $html_output;

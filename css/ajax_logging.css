@@ -65,3 +65,7 @@
     .switch_container .slider.round:before {
       border-radius: 50%;
     }
+
+    .canvaschart {
+      padding-bottom: 40px;
+  }

@@ -73,17 +73,12 @@ jQuery(document).ready(function ($) {
         text:"Ajax action logs - 24 hours"
         },
         axisX: {
-
         valueFormatString: "HH:mm",
-
-     //   intervalType: "hour",
-
-        minimum:  start.setHours(0,0,0,0),
+        interval: 1,
+        intervalType: "hour",
+      // minimum:  start.setHours(0,0,0,0), // you can use this ti display data from the first hour.
 
         },
-
-
-
         toolTip:  {
             shared: true
         },
@@ -93,14 +88,8 @@ jQuery(document).ready(function ($) {
 
         chart.options.data = [];
         var occurrences = data.reduce( (acc, obj) => {
-          //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
 
-            date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
-
-
-          //  date = obj.timestamp;
-
-          //  console.log(obj.timestamp);
+        date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
 
         acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
         acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
@@ -110,16 +99,15 @@ jQuery(document).ready(function ($) {
             var dataPoints = [];
             for(var key in occurrences[actions]) {
 
-                // check if timestamp is today
+                // check if timestamp it's today's date
                 var inputDate = new Date(parseInt(key));
                 var todaysDate = new Date();
 
                 if (inputDate.setHours(0,0,0,0) == todaysDate.setHours(0,0,0,0)) {
-                    console.log("TODAY IS TODAY");
+                //  console.log("TODAY IS TODAY");
                     dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
 
                 }
-
         }
         chart.options.data.push({
             type: "line",
@@ -133,8 +121,6 @@ jQuery(document).ready(function ($) {
         
         chart.render(); 
     });
-
-
 
  }
      
@@ -151,8 +137,6 @@ jQuery(document).ready(function ($) {
 
 jQuery(document).ready(function ($) {
 
-
-    
  if (jQuery('#chartContainer-daily').length == 1)  {
 
         var chart = new CanvasJS.Chart("chartContainer-daily",{
@@ -175,15 +159,9 @@ jQuery(document).ready(function ($) {
     
             chart.options.data = [];
             var occurrences = data.reduce( (acc, obj) => {
-            //  date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60)))*1000; // to group by date
-    
-                date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
-    
-    
-            //  date = obj.timestamp;
-    
-            //   console.log(obj.timestamp);
-    
+
+            date = (obj.timestamp - (obj.timestamp % (24 * 60 * 60))); // to group by date
+
             acc[obj.ajax_action] = acc[obj.ajax_action] ? acc[obj.ajax_action] : {};
             acc[obj.ajax_action][date] = (acc[obj.ajax_action][date] || 0)+1
             return acc;
@@ -191,7 +169,16 @@ jQuery(document).ready(function ($) {
             for(var actions in occurrences) {
                 var dataPoints = [];
                 for(var key in occurrences[actions]) {
-                dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
+
+                // check if timestamp months aer current month
+                var timestamp_Month = new Date(parseInt(key)).getMonth();
+                var current_month = new Date().getMonth();
+
+                if (timestamp_Month == current_month) {
+                  //  console.log("Get current month data");
+                    dataPoints.push({ x: parseInt(key), y: occurrences[actions][key]});
+                }
+                
             }
             chart.options.data.push({
                 type: "line",
@@ -206,7 +193,6 @@ jQuery(document).ready(function ($) {
             chart.render(); 
         });
     }
-     
 
  });
 
