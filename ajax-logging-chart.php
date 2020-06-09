@@ -22,6 +22,7 @@ wp_register_script( 'ajax_logging', plugin_dir_url(__FILE__).'js/ajax_logging.js
 wp_enqueue_script( 'ajax_logging' );
 
 
+
 function wpdocs_enqueue_custom_admin_style() {
   wp_register_style( 'custom_wp_admin_css', plugin_dir_url( __FILE__ ) . 'css/ajax_logging.css', false, '1.0.0' );
   wp_enqueue_style( 'custom_wp_admin_css' );
@@ -47,7 +48,14 @@ function ajax_logging($switch) {
 
   $ajax_log_file_json = WP_CONTENT_DIR . "/uploads/ajax-log.json";
 
-  $current_data = file_get_contents($ajax_log_file_json);
+  if (file_exists($ajax_log_file_json)) {
+
+    $current_data = file_get_contents($ajax_log_file_json);
+
+  }
+
+
+
  
  // Check if ajax is there. 
    if ( wp_doing_ajax() ){
@@ -92,7 +100,7 @@ function ajax_logging($switch) {
          $array_data[] = $ajax_json_array;
                  
          $data_proccesed = json_encode($array_data, JSON_PRETTY_PRINT);
- 
+
          file_put_contents($ajax_log_file_json, $data_proccesed); 
 
      } 
@@ -110,6 +118,18 @@ add_action('admin_menu', 'myplugin_register_options_page');
 
 
 function ajax_log_admin_page() {
+
+  // Check if file exist then call the js chart file
+  $filename = WP_CONTENT_DIR . "/uploads/ajax-log.json";
+  if(file_exists($filename)){
+    // call the js chart file
+    echo '<script type="text/javascript" src="' . plugin_dir_url(__FILE__) . '/js/charts.js"></script>';
+  }
+  else{
+    echo "<h1>Ajax file has been deleted</h1>";
+  }
+
+
  
 
  $html_output = '
@@ -126,18 +146,24 @@ function ajax_log_admin_page() {
      <span class="slider round"></span>
    </label>
    </div>
+   <a href="#"><div class="delet_ajax">Delete all ajax logs</div></a>
  
  </head>
  <body>
- <div class="canvaschart" id="chartContainer-hourly" style="height: 300px; width: 100%;"> Hourly Ajax Logs </div>
- <div class="canvaschart" id="chartContainer-daily" style="height: 300px; width: 100%;"> Daily Ajax Logs </div>
+
+ <div class="chart_container">
+  <div class="canvaschart" id="chartContainer-hourly" style="height: 300px; width: 100%;">  </div>
+  <div class="canvaschart" id="chartContainer-daily" style="height: 300px; width: 100%;"> </div>
+ </div>
+
 
  ';
      echo $html_output;
 }
 
 
-/// This is your ajax handler called by your jquery file
+
+/// This is your ajax handler to switch on or off ajax logging
 function my_ajax_handler22() {
 
   // Retrieve data from ajax
@@ -158,5 +184,29 @@ function my_ajax_handler22() {
     
   }
 }
-add_action('wp_ajax_echo_me', 'my_ajax_handler22'); // wp_ajax_{action}
-add_action('wp_ajax_nopriv_echo_me', 'my_ajax_handler22'); // wp_ajax_nopriv_{action}
+add_action('wp_ajax_ajax_switcher', 'my_ajax_handler22'); // wp_ajax_{action}
+add_action('wp_ajax_nopriv_ajax_switcher', 'my_ajax_handler22'); // wp_ajax_nopriv_{action}
+
+
+
+/// This is your ajax handler called to delete the ajax file
+function ajax_delete_log() {
+
+  // Retrieve data from ajax
+  if( isset( $_POST[ "delete_confirm" ] ) ) {
+    
+      $ajax_delete = $_POST[ "delete_confirm" ];
+
+      if ($ajax_delete  == 'delete_me') {
+
+        $ajax_log_file_json = WP_CONTENT_DIR . "/uploads/ajax-log.json";
+        wp_delete_file( $ajax_log_file_json );
+
+      }
+
+      die;
+    
+  }
+}
+add_action('wp_ajax_ajax_delete', 'ajax_delete_log'); // wp_ajax_{action}
+add_action('wp_ajax_nopriv_ajax_delete', 'ajax_delete_log'); // wp_ajax_nopriv_{action}

@@ -1,5 +1,6 @@
     .switch_container {
         padding: 15px;
+        display: inline;
     }
 
     .switch_container label.switch {
@@ -69,3 +70,18 @@
     .canvaschart {
       padding-bottom: 40px;
   }
+  .delet_ajax {
+    display: inline;
+    float: right; 
+    background-color: #ab3d3d;
+    border-radius: 34px;
+    padding: 10px;
+    margin: 5px;
+    color: #fff;
+}
+
+
+.delet_ajax:hover {
+  transition: 0.3s;
+  background-color: #ff1f1f;
+}
