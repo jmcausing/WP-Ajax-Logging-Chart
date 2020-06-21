@@ -16,24 +16,22 @@ function myplugin_activate() {
 register_activation_hook( __FILE__, 'myplugin_activate' );
 
 
-
-// Call js scripts
-wp_register_script( 'ajax_logging', plugin_dir_url(__FILE__).'js/ajax_logging.js', array('jquery') );
-wp_enqueue_script( 'ajax_logging' );
-
-
-
+// Call CSS file
 function wpdocs_enqueue_custom_admin_style() {
   wp_register_style( 'custom_wp_admin_css', plugin_dir_url( __FILE__ ) . 'css/ajax_logging.css', false, '1.0.0' );
   wp_enqueue_style( 'custom_wp_admin_css' );
 }
-
 add_action( 'admin_enqueue_scripts', 'wpdocs_enqueue_custom_admin_style' ); 
-
-
 
 add_action( 'init', 'ajax_logging' );
 function ajax_logging($switch) {
+
+
+
+  // Call js scripts
+  wp_register_script( 'ajax_logging', plugin_dir_url(__FILE__).'js/ajax_logging.js', array('jquery') );
+  wp_enqueue_script( 'ajax_logging' );
+
 
 
   $ajax_status = get_post_meta( 99999, 'ajax_switch', 'on' );
@@ -55,8 +53,6 @@ function ajax_logging($switch) {
   }
 
 
-
- 
  // Check if ajax is there. 
    if ( wp_doing_ajax() ){
 

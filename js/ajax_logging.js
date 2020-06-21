@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
 
     // check ajax status from get post meta
-    console.log(ajax_logging_status.ajax_status);  
+    // console.log(ajax_logging_status.ajax_status);  
     if (ajax_logging_status.ajax_status == 'off') {
         jQuery('input.ajax_switch').prop("checked", false);
     }
